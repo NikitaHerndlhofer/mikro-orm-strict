@@ -16,9 +16,12 @@
   "author": "Nikita Herndlhofer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nikitaherndlhofer/mikro-orm-strict"
+    "url": "https://github.com/NikitaHerndlhofer/mikro-orm-strict.git"
   },
+  "homepage": "https://github.com/NikitaHerndlhofer/mikro-orm-strict#readme",
+  "bugs": "https://github.com/NikitaHerndlhofer/mikro-orm-strict/issues",
   "type": "module",
+  "sideEffects": true,
   "exports": {
     ".": {
       "import": {
@@ -37,8 +40,12 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "tsup && node scripts/postbuild.mjs",
+    "test": "vitest --run --typecheck",
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
@@ -48,6 +55,7 @@
   "devDependencies": {
     "@mikro-orm/core": "^6.4.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
   }
 }
