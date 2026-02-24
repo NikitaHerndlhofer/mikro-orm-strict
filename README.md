@@ -13,7 +13,9 @@ Type-safe extensions for [MikroORM](https://mikro-orm.io/) that catch mistakes a
 | `PartialEntity<T>` | Entity type where only the primary key is guaranteed |
 | `assertFlushed()` | Runtime assertion that narrows `Unflushed<T>` back to `T` |
 | `isFlushed()` | Non-throwing type guard for the same |
-| `fieldsFor()` | Type-safe builder for MikroORM `fields` arrays |
+| `FieldsFor<T>` | Union type of all valid field paths — use for annotations and parameters |
+| `fieldsFor()` | Runtime helper that returns a type-safe `fields` array |
+| `DataKey<T>` | String property keys of an entity, excluding methods |
 | `ExtractRelations<T>` | Utility type that extracts relation keys from an entity |
 
 ## Install
@@ -98,12 +100,24 @@ assertFlushed(user, 'Failed to create user');
 assertFlushed(user, { message: 'Failed to create user', email });
 ```
 
-### `fieldsFor` — type-safe partial loading
+### `FieldsFor<T>` / `fieldsFor()` — type-safe partial loading
+
+Use the `FieldsFor<T>` type for annotations, or the `fieldsFor()` function for inline construction:
 
 ```ts
-const fields = fieldsFor(User, '*', 'profile.avatar');
+import { FieldsFor, fieldsFor } from 'mikro-orm-strict';
+
+// As a type annotation — useful for function signatures and shared constants
+const fields: FieldsFor<User>[] = ['*', 'profile.avatar', 'posts.title'];
+
+// Or via the helper function
+const fields = fieldsFor(User, '*', 'profile.avatar', 'posts.title');
+
+// Both work with MikroORM queries
 const user = await em.findOneOrFail(User, id, { fields });
 ```
+
+`FieldsFor<T>` recursively generates all valid dotted paths (up to 2 levels deep by default). Invalid paths like `'nonExistent'` or `'email.id'` are compile-time errors.
 
 ## Error handling
 

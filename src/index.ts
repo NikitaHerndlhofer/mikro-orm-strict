@@ -1,6 +1,6 @@
 import type {
   AssignOptions,
-  AutoPath,
+  Collection,
   CreateOptions,
   EntityClass,
   EntityData,
@@ -112,8 +112,50 @@ export function isFlushed<T extends object>(
 }
 
 // =============================================================================
-// fieldsFor
+// FieldsFor — type-safe partial loading paths
 // =============================================================================
+
+/** String property keys of T, excluding methods. */
+export type DataKey<T> = {
+  [K in Extract<keyof T, string>]: T[K] extends (...args: any[]) => any
+    ? never
+    : K;
+}[Extract<keyof T, string>];
+
+type IsRelation<V> =
+  NonNullable<V> extends Reference<infer _>
+    ? true
+    : NonNullable<V> extends Collection<infer _, any>
+      ? true
+      : false;
+
+type UnwrapRef<V> =
+  NonNullable<V> extends Reference<infer U>
+    ? U
+    : NonNullable<V> extends Collection<infer U, any>
+      ? U
+      : V;
+
+/**
+ * Union of all valid field paths for MikroORM partial loading.
+ * Provides autocomplete and compile-time validation.
+ *
+ * @example
+ * ```ts
+ * const fields: FieldsFor<LegalEntity>[] = ['*', 'signatories.id'];
+ * const entity = await em.findOneOrFail(LegalEntity, { id }, { fields });
+ * ```
+ */
+export type FieldsFor<T, Depth extends unknown[] = [1, 1]> =
+  | '*'
+  | DataKey<T>
+  | (Depth extends [unknown, ...infer Rest]
+      ? {
+          [K in DataKey<T>]: IsRelation<T[K]> extends true
+            ? `${K}.${FieldsFor<UnwrapRef<T[K]>, Rest>}`
+            : never;
+        }[DataKey<T>]
+      : never);
 
 /**
  * Creates a type-safe `fields` array for MikroORM partial loading.
@@ -124,9 +166,9 @@ export function isFlushed<T extends object>(
  * const user = await em.findOneOrFail(User, id, { fields });
  * ```
  */
-export function fieldsFor<T extends object, P extends string>(
+export function fieldsFor<T extends object>(
   _entity: EntityClass<T>,
-  ...fields: AutoPath<T, P, "*">[]
+  ...fields: FieldsFor<T>[]
 ) {
   return fields;
 }
