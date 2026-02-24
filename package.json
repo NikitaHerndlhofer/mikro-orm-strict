@@ -1,6 +1,6 @@
 {
   "name": "mikro-orm-strict",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Type-safe extensions for MikroORM: createStrict, assignStrict, getStrictReference, Unflushed<T>, and flush guards",
   "keywords": [
     "mikro-orm",
