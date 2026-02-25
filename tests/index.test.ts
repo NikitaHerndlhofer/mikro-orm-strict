@@ -24,7 +24,6 @@ import { EntityManager } from '@mikro-orm/core';
 import {
   assertFlushed,
   isFlushed,
-  fieldsFor,
   UnflushedEntityError,
 } from '../src/index';
 
@@ -244,24 +243,6 @@ describe('isFlushed', () => {
     setupWrap('Config', [{ name: 'key' }, { name: 'value' }]);
 
     expect(isFlushed(entity)).toBe(true);
-  });
-});
-
-// =============================================================================
-// fieldsFor
-// =============================================================================
-
-describe('fieldsFor', () => {
-  it('returns the fields array as provided', () => {
-    class FakeEntity {}
-    const result = fieldsFor(FakeEntity as any, '*' as any, 'foo' as any);
-    expect(result).toEqual(['*', 'foo']);
-  });
-
-  it('returns an empty array when no fields given', () => {
-    class FakeEntity {}
-    const result = fieldsFor(FakeEntity as any);
-    expect(result).toEqual([]);
   });
 });
 

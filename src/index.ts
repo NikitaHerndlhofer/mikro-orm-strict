@@ -157,22 +157,6 @@ export type FieldsFor<T, Depth extends unknown[] = [1, 1]> =
         }[DataKey<T>]
       : never);
 
-/**
- * Creates a type-safe `fields` array for MikroORM partial loading.
- *
- * @example
- * ```ts
- * const fields = fieldsFor(User, '*', 'profile.avatar');
- * const user = await em.findOneOrFail(User, id, { fields });
- * ```
- */
-export function fieldsFor<T extends object>(
-  _entity: EntityClass<T>,
-  ...fields: FieldsFor<T>[]
-) {
-  return fields;
-}
-
 // =============================================================================
 // Utility types
 // =============================================================================
